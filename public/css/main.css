@@ -1,0 +1,174 @@
+body { font-family: arial; font-size: 14px; color: #555; line-height: 24px; background: #EDEFF1; position: relative;}
+a {color: #277dd4; text-decoration: none;}
+a:hover {color: #555; text-transform: underline !important;}
+
+.container { padding: 10px; margin: auto; width: 1000px; position: relative; }
+
+.left {float: left;}
+.right {float: right;}
+.db {display: block;}
+.c {overflow: hidden;}
+.cb {clear: both; display: block;}
+.rad {-webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px;}
+
+*:focus {outline: none}
+input,button {font-family: arial; font-size: 15px;}
+button {cursor: pointer; background: #34495E; color: #fff; height: 40px; line-height: 40px; border: none; padding: 0 20px;}
+button:hover {background: #415B76;}
+button:disabled {cursor: default; background: #D1D5D8; color: #EEEFF1;}
+button.danger {background: #e74c3c;}
+button.danger:hover {background: #EC7063;}
+button.success {background: #1abc9c;}
+button.success:hover {background: #24c9a8;}
+button.mini {height: 20px; line-height: 20px; padding: 0 5px; font-size: 12px;}
+input[type=text], input[type=email], input[type=password] {border: 2px solid #BDC3C7; background: #fff; color: #555; height: 40px; line-height: 40px; padding: 0 10px;}
+input[type=text]:focus, input[type=email]:focus, input[type=password]:focus {border-color: #1ABC9C;}
+input.mini {height: 30px; line-height: 30px;}
+
+/* messages*/
+.messages {position: fixed; right: 10px; top: 10px; margin: auto; width: 200px; z-index: 999;}
+.messages .message {cursor: pointer; position: relative; top: 0; color: #fff; padding: 5px; font-size: 11px; margin-bottom: 5px;}
+.messages .message.success {background: #2ECC71;}
+.messages .message.warning {background: #E74C3C;}
+
+
+/* header */
+.header { background: #fff; border-bottom: 3px solid #ddd; margin-bottom: 10px;}
+.header .logo {}
+.header .stats {}
+.header .stats .block {margin-left: 10px; border: 2px solid #e1e4e8;}
+.header .stats .block span.key {padding: 2px 5px; border-bottom: 1px solid #e1e4e8; display: block; text-transform: uppercase; font-size: 11px; font-family: tahoma; color: #777;}
+.header .stats .block span.value {display: block; padding: 4px 5px; font-size: 15px; color: #666;}
+.header .stats .block span.value i {font-size: 12px;}
+.header .stats .block.balance {border-color: #ccc;}
+/* sections */
+.section {float: left; overflow: hidden;  height: 315px; border-bottom: 3px solid #ddd;background: #fff;}
+.section .in {padding: 15px; }
+.section.stats {width: 250px; margin-right: 10px;}
+.section.dice {width: 400px; margin-right: 10px;}
+.section.invest {width: 330px;}
+
+/* stats*/
+.section.stats .line {margin-bottom: 6px; overflow: hidden;}
+
+.section.stats .line.user {border-bottom: 2px dotted #777; padding-bottom: 10px;}
+.section.stats .line.user .user-name {}
+
+.section.stats .line.user .edit-user-name {position: relative;}
+.section.stats .line.user .edit-user-name input { width: 100%;}
+.section.stats .line.user .edit-user-name button {position: absolute; right: 5px; top: 5px;}
+
+.section.stats .line.user .user-name .name {font-size: 22px; font-weight: bold; cursor: pointer;}
+.section.stats .line.user .user-name .name i {font-size: 15px; margin-left: 5px;}
+
+.section.stats .line .property {color: #777; display: inline-block; float: left; width: 110px; text-transform: uppercase; font-size: 10px; font-family: tahoma;}
+.section.stats .line .value {}
+
+
+/* dice */
+.section.dice .balance {}
+.section.dice .balance .btc {padding: 7px 10px; font-size: 17px; display: inline-block; border: 1px dotted #777;}
+.section.dice .balance button.deposit {float: right;}
+
+.section.dice .game {padding: 20px; margin-top: 10px; padding-top: 0; background: #F7F7F7; border-top: 2px solid #ddd;}
+.section.dice .game .row {margin-top: 10px;}
+.section.dice .game .row span.title {color: #777; font-family: tahoma; font-size: 15px; padding-bottom: 5px;}
+.section.dice .game .row .inputs {width: 49%;}
+.section.dice .game .row .inputs input[type=text] {width: 100%;}
+
+.section.dice .game .row.results {}
+.section.dice .game .row.results span {background: #efefef; padding: 7px 10px; color: #444; font-family: tahoma; font-size: 15px; width: calc(49% - 20px);}
+
+.section.dice .game .row.buttons {}
+.section.dice .game .row.buttons button {float: left; width: 50%; margin: 0; height: 50px; font-weight: bold; text-transform: uppercase; line-height: 50px; padding: 0; text-align: center; position: relative;}
+.section.dice .game .row.buttons button.roll-under {border-right: 1px solid #718293;}
+.section.dice .game .row.buttons button.roll-over {border-left: 1px solid #718293;}
+.section.dice .game .row.buttons button i.l {padding-right: 10px;}
+.section.dice .game .row.buttons button i.r {padding-left: 10px;}
+
+/* invest */
+.section.invest {}
+.section.invest .invest-form {margin-bottom: 10px;}
+.section.invest .invest-form input {width: 70%;}
+.section.invest .invest-form button {width: 28%;}
+.section.invest .my-invests {overflow-y: scroll; height: 250px;}
+.section.invest .my-invests .invest-item {padding-bottom: 5px; margin-bottom: 5px; border-bottom: 2px solid #DDDDDD;}
+.section.invest .my-invests .invest-item span {display: inline-block; width: 60px; font-family: tahoma; font-size: 10px; text-transform: uppercase; color: #777;}
+.section.invest .my-invests .invest-item button.divest {margin-right: 10px;}
+
+.section.invest .do-invest {font-weight: bold; opacity: .7; margin-top: 10px; padding: 50px; background: #efefef; text-align: center;}
+
+/* tabs-home */
+.tabs-home {background: #fff; margin-top: 10px; }
+.tabs-home .tab-head {height: 30px; line-height: 30px; border-bottom: 2px solid #1ABC9C;}
+.tabs-home .tab-head ul {}
+.tabs-home .tab-head ul li {float: left; font-weight: bold; padding: 0 10px; cursor: pointer;}
+.tabs-home .tab-head ul li.active {background: #1ABC9C; color: #fff;}
+.tabs-home .tab-head ul li.logout {float: right;}
+.tabs-home .tab-head ul li.logout a {color: #e74c3c;}
+.tabs-home .tab-head ul li.logout:hover { background: #e74c3c;}
+.tabs-home .tab-head ul li.logout:hover a {color: #fff;}
+
+.tabs-home .tab-view {padding: 10px;}
+.tabs-home .tab-view .tab-in {}
+
+/* bets table */
+table.table {width: 100%;}
+table.table tr {padding: 0 10px;}
+table.table tr:nth-child(odd) {background: #f7f7f7;}
+table.table tr:nth-child(odd) {even}
+table.table tr.head {font-weight: bold; background: #EBEDEF;}
+
+table.table tr.bet {font-size: 13px; color: #777;}
+table.table tr td {padding-left: 10px;}
+table.table tr td.profit {font-weight: bold;}
+table.table tr.bet.win td.profit {color: #25ba63;}
+table.table tr.bet.lose td.profit {color: #FF6257;}
+
+table.table.withdraws {}
+table.table.withdraws tr.withdraw {}
+table.table.withdraws tr.withdraw.processing {color: #888;}
+table.table.withdraws tr.withdraw.approved {color: green;}
+
+/* settings */
+.settings {}
+.settings .line {margin-bottom: 10px; padding: 10px; border-bottom: 2px solid #ddd; background: #F7F7F7;}
+.settings .line .label {width: 200px; font-weight: bold;}
+.settings .line .content {width: 500px;}
+.settings .line .tag {width: 150px; display: inline-block; margin-right: 10px;}
+.settings .line .content .s {margin-bottom: 5px;}
+
+/* modal */
+.modal {}
+.modal .modal-title {padding: 5px 0; border-bottom: 2px solid #ddd; color: #555; font-size: 16px; text-transform: uppercase; font-weight: bold;}
+
+/* withdraw-modal */
+.withdraw-modal {}
+.withdraw-modal > div {margin-bottom: 10px;}
+.withdraw-modal > div > span {color: #777;}
+
+/* deposit-modal */
+.deposit-modal {}
+.deposit-modal .deposit-address {padding: 10px; background: #fff;}
+
+/* index page */
+.index-page {width: 45%; margin: auto; margin-top: 100px; overflow: hidden;}
+.index-page h2 {text-transform: uppercase; color: #777; font-weight: bold;}
+.index-page > div {width: 45%; background: #fff; padding: 2%;}
+.index-page > div > div {margin-top: 20px;}
+.index-page > div > div input.s {width: 100%;}
+
+#chat {position: fixed; right: 0; bottom: 0; width: 230px; background: #fff; border-left: 2px solid #ccc; border-top: 2px solid #ccc; z-index: 10;}
+#chat .c-messages {height: 200px; overflow-y: scroll;}
+#chat .c-messages .message {padding: 0px 10px; border-bottom: 1px solid #efefef; font-size: 12px;}
+#chat .c-messages .message .user {font-weight: bold;}
+#chat .c-messages .message.level10 {background: #FFE8E8;}
+#chat .c-messages .message.level10 .user {color: #DE8585;}
+#chat .c-messages .message .top {font-size: 11px; color: #777;}
+#chat .send {padding: 10px; border-top: 2px solid #ccc;}
+#chat .send input {width: 100%;}
+#chat .chat-toggle {position: absolute; height: 25px; line-height: 25px; background: #fff; top: -27px; right: 0; cursor: pointer; padding: 0 10px; font-size: 12px; font-weight: bold; border-left: 2px solid #ccc; border-top: 2px solid #ccc;}
+#chat .unread-count {background: #2ECC71; text-align: center; display: inline-block; color: #fff; font-size: 10px; height: 20px; 
+	line-height: 20px; width: 20px; -webkit-border-radius: 13px; -moz-border-radius: 13px; border-radius: 13px;}
+
+.footer {text-align: center; padding: 10px 0;}

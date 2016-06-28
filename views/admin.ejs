@@ -1,0 +1,505 @@
+<html lang="tr-TR" ng-app="admin">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="description" content="The biggest satoshi faucet! Free satoshies per 10 minutes. Up to 0.000144 Bitcoin in one day!">
+	<meta name="keywords" content="btc,free,faucet,bitcon,satoshi,mine,get bitcoin">
+	<meta name="author" content="Satoshi Rain - Bitcoin">
+	<title><%= baslik %></title>
+
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/admin.css">
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/font-awesome.min.css">
+	
+	<script src="<%= site_adres %>js/jquery.js" type="text/javascript"></script>
+	<script src="<%= site_adres %>js/angular.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	$(function(){
+		var AJAX_URL  = "<%= site_adres %>ajax/";
+
+	});
+	</script>
+</head>
+<body ng-controller="adminController">
+
+
+
+<div class="admin-page db c rad" ng-controller="tabControl">
+	<div class="left menu">
+		<ul class="nav nav-pills nav-stacked">
+ 			<li ng-repeat="tab in tabs" 
+	            ng-class="{active:isActiveTab(tab.url)}" 
+	            ng-click="onClickTab(tab)"><a>{{tab.title}}  <span class="badge">{{ (tab.url == 'withdraws.tpl.html') ? (dashboard_withdraws != '0') ? dashboard_withdraws : '' : ''}}</span> </a></li>
+		</ul>
+	</div>
+	<div class="right content">
+		<div class="tab-view" id="mainView">
+        	<div ng-include="currentTab"></div>
+   		</div>
+	</div>
+
+
+</div>
+
+
+
+<script type="text/ng-template" id="dashboard.tpl.html">
+<div class="panel panel-default statics">
+  <div class="panel-heading">Statics</div>
+  <div class="panel-body">
+  	<div class="blocks db c">
+	  	<div class="col-xs-3 block">
+	  		<div class="in">
+	  			<span class="key label label-info">Bets</span>
+	  			<span class="value db">{{dashboard_bets}}</span>
+	  		</div>
+	  	</div>
+
+	  	<div class="col-xs-3 block">
+	  		<div class="in">
+	  			<span class="key label label-info">Wins</span>
+	  			<span class="value db">{{dashboard_wins}}</span>
+	  		</div>
+	  	</div>
+
+	  	<div class="col-xs-3 block">
+		  	<div class="in">
+		  		<span class="key label label-info">Wagered</span>
+		  		<span class="value db">{{dashboard_wagered}}</span>
+		  	</div>
+	  	</div>
+
+	  	<div class="col-xs-3 block">
+		  	<div class="in">
+		  		<span class="key label label-info">Profit</span>
+		  		<span class="value db">{{dashboard_profit}}</span>
+		  	</div>
+	  	</div>
+
+	  	<div class="cb"></div>
+
+	  	<div class="col-xs-4 block">
+		  	<div class="in">
+		  		<span class="key label label-success">Invests</span>
+		  		<span class="value db">{{dashboard_invests}}</span>
+		  	</div>
+	  	</div>
+	  	<div class="col-xs-4 block">
+		  	<div class="in">
+		  		<span class="key label label-success">Invests Profits</span>
+		  		<span class="value db">{{dashboard_invests_profits}}</span>
+		  	</div>
+	  	</div>
+	  	<div class="col-xs-4 block">
+		  	<div class="in">
+		  		<span class="key label label-success">Investors</span>
+		  		<span class="value db">{{dashboard_investors}}</span>
+		  	</div>
+	  	</div>
+
+	  	<div class="cb"></div>
+
+
+	  	<div class="col-xs-4 block">
+		  	<div class="in">
+		  		<span class="key label label-info">Users Count</span>
+		  		<span class="value db">{{dashboard_users_count}}</span>
+		  	</div>
+	  	</div>
+	  	<div class="col-xs-4 block">
+		  	<div class="in">
+		  		<span class="key label label-warning">Pending Withdrawals</span>
+		  		<span class="value db">{{dashboard_withdraws}}</span>
+		  	</div>
+	  	</div>
+	  	<div class="col-xs-4 block">
+		  	<div class="in">
+		  		<span class="key label label-info">Deposits</span>
+		  		<span class="value db">{{dashboard_deposits}}</span>
+		  	</div>
+	  	</div>
+
+	  	<div class="cb"></div>
+
+  	</div>
+  </div>
+</div>
+</script>
+
+<script type="text/ng-template" id="users.tpl.html">
+<div ng-controller="userController">
+<div class="db">
+	<input class="form-control right" type="text" ng-model="q" placeholder="Filter by anything" style="width:250px"/>
+	<div class="cb"></div>
+</div>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>user</th>
+      <th>date</th>
+      <th>bets</th>
+      <th>wins</th>
+      <th>losses</th>
+      <th>balance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="user in users | filter: q">
+      <td>{{user.user_id}}</td>
+      <td>{{user.user_name}}</td>
+      <td>{{user.user_date | timeAgo}}</td>
+      <td>{{user.user_bet_count}}</td>
+      <td>{{user.user_win_count}}</td>
+      <td>{{user.user_bet_count - user.user_win_count}}</td>
+      <td>{{user.user_balance | len }}</td>
+    </tr>
+  </tbody>
+</table>
+<div class="pagination-div">
+	<ul class="pagination">
+		<li ng-repeat="n in [] | range:total_page" ng-click="show(n+1)"><a>{{n + 1}}</a></li>
+	</ul>
+</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="withdraws.tpl.html">
+<div ng-controller="withdrawsController">
+<div class="db">
+	<button class="btn btn-default left" ng-click="q.wd_confirm = 0">Show pendings</button>
+	<input class="form-control right" ng-model="q" placeholder="Filter by anything" style="width: 250px"/>
+	<div class="cb"></div>
+</div>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>user</th>
+      <th>date</th>
+      <th>amount</th>
+      <th>to where</th>
+      <th>txid</th>
+      <th>-</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="wd in withdraws | filter: q">
+      <td>{{wd.wd_id}}</td>
+      <td>{{wd.user_name}}</td>
+      <td>{{wd.wd_date | timeAgo}}</td>
+      <td>{{wd.wd_amount}}</td>
+      <td>{{wd.wd_btc_address}}</td>
+      <td><a ng-show="wd.wd_tx_id" target="_blank" href="https://blockchain.info/tx/{{wd.wd_tx_id}}">{{ (!wd.wd_tx_id) ? wd.wd_tx_id.substring(0, 20) : 'txid'}}</a></td>
+      <td>
+	      <div ng-switch="wd.wd_confirm">
+	      	<div ng-switch-when="0">
+	      		<button class="btn btn-success btn-sm" ng-click="set(wd.wd_id, 'approve', wd.wd_btc_address, wd.wd_amount)">Approve</button>
+	      		<button class="btn btn-danger btn-sm" ng-click="set(wd.wd_id, 'decline')">Decline</button>
+	      	</div>
+	      	<div ng-switch-when="1">
+	      		<span class="label label-success">Sent</span>
+	      	</div>
+	      	<div ng-switch-when="2">
+	      		<span class="label label-danger">Declined</span>
+	      	</div>
+	      </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div class="pagination-div">
+	<ul class="pagination">
+		<li ng-repeat="n in [] | range:total_page" ng-click="show(n+1)"><a>{{n + 1}}</a></li>
+	</ul>
+</div>
+</div>
+</script>
+
+
+<script type="text/ng-template" id="deposits.tpl.html">
+<div ng-controller="depositsController">
+<div class="db">
+	<input class="form-control right" ng-model="q" placeholder="Filter by anything" style="width: 250px"/>
+	<div class="cb"></div>
+</div>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>user</th>
+      <th>date</th>
+      <th>amount</th>
+      <th>btc address</th>
+      <th>tx id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="dp in deposits | filter: q">
+      <td>{{dp.dp_id}}</td>
+      <td>{{dp.user_name}}</td>
+      <td>{{dp.dp_date | timeAgo}}</td>
+      <td>{{dp.dp_amount}}</td>
+      <td>{{dp.dp_btc_address}}</td>
+      <td><a target="_blank" href="https://blockchain.info/tx/{{dp.dp_tx_id}}">{{dp.dp_tx_id.substring(0, 20)}}...</a></td>
+    </tr>
+  </tbody>
+</table>
+<div class="pagination-div">
+	<ul class="pagination">
+		<li ng-repeat="n in [] | range:total_page" ng-click="show(n+1)"><a>{{n + 1}}</a></li>
+	</ul>
+</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="chat.tpl.html">
+<div ng-controller="chatController">
+<div class="db">
+	<input class="form-control right" ng-model="q" placeholder="Filter by anything" style="width: 250px"/>
+	<div class="cb"></div>
+</div>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>user</th>
+      <th>date</th>
+      <th>text</th>
+      <th>-</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="m in messages | filter: q">
+      <td>{{m.m_id}}</td>
+      <td>{{m.user_name}}</td>
+      <td>{{m.m_date | timeAgo}}</td>
+      <td>{{m.m_text}}</td>
+      <td>
+      <button class="btn btn-danger btn-sm" ng-click="delete(m.m_id)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div class="pagination-div">
+	<ul class="pagination">
+		<li ng-repeat="n in [] | range:total_page" ng-click="show(n+1)"><a>{{n + 1}}</a></li>
+	</ul>
+</div>
+</div>
+</script>
+
+<script src="<%= site_adres %>socket.io/socket.io.js"></script>
+<script type="text/javascript">
+var admin = angular.module('admin', [])
+admin.controller('adminController', ['$scope', '$http', 'socket', function($scope, $http, socket) {
+	
+	$scope.dashboard_bets = '<%= dashboard.bets %>';
+	$scope.dashboard_wins = '<%= dashboard.wins %>';
+	$scope.dashboard_wagered = '<%= dashboard.wagered %>';
+	$scope.dashboard_profit = '<%= dashboard.profit %>';
+	$scope.dashboard_invests = '<%= dashboard.invests %>';
+	$scope.dashboard_invests_profits = '<%= dashboard.invests_profits %>';
+	$scope.dashboard_investors = '<%= dashboard.investors %>';
+	$scope.dashboard_users_count = '<%= dashboard.users_count %>';
+	$scope.dashboard_withdraws = '<%= dashboard.withdraws %>';
+	$scope.dashboard_deposits = '<%= dashboard.deposits %>';
+
+}]);
+
+
+admin.controller('userController', function($scope, $http) {
+	$scope.per_page = 100;
+	$scope.total_page = Math.ceil(<%= dashboard.users_count %>/$scope.per_page);
+		
+	$scope.range = function(num) {
+	    return new Array(num);   
+	}
+	$scope.show = function(num) {
+		$http.get('api/users/'+num).success(function(data, status, headers, config) {
+			$scope.users = data;
+		});	   
+	}
+	$scope.show(1);	
+});
+
+admin.controller('withdrawsController', function($scope, $http, socket) {
+	$scope.per_page = 10;
+	$http.get('api/withdraws/total').success(function(data, status, headers, config) {
+		$scope.total_page = Math.ceil(data.total/$scope.per_page);
+
+	});
+
+	$scope.range = function(num) {
+	    return new Array(num);   
+	}
+	$scope.show = function(num) {
+		$http.get('api/withdraws/page/'+num).success(function(data, status, headers, config) {
+			$scope.withdraws = data;
+		});	   
+	}
+	$scope.show(1);
+
+	$scope.set = function(wd_id, type, btc_address, amount) {
+	    socket.emit('withdraw:set', { wd_id: wd_id, type: type, btc_address: btc_address, amount: amount }, function(d) {
+			if(d.c == "1") {
+	        	alert(d.m);
+	        } else {
+	        	alert(d.m);
+	        }
+	    });
+	}
+});
+
+
+admin.controller('depositsController', function($scope, $http, socket) {
+	$scope.per_page = 10;
+	$http.get('api/deposits/total').success(function(data, status, headers, config) {
+		$scope.total_page = Math.ceil(data.total/$scope.per_page);
+
+	});
+	$scope.range = function(num) {
+	    return new Array(num);   
+	}
+	$scope.show = function(num) {
+		$http.get('api/deposits/page/'+num).success(function(data, status, headers, config) {
+			$scope.deposits = data;
+		});	   
+	}
+	$scope.show(1);
+});
+
+admin.controller('chatController', function($scope, $http, socket) {
+	$scope.per_page = 10;
+	$http.get('api/chat/total').success(function(data, status, headers, config) {
+		$scope.total_page = Math.ceil(data.total/$scope.per_page);
+
+	});
+	$scope.range = function(num) {
+	    return new Array(num);   
+	}
+	$scope.show = function(num) {
+		$http.get('api/chat/page/'+num).success(function(data, status, headers, config) {
+			$scope.messages = data;
+		});	   
+	}
+	$scope.show(1);
+
+	$scope.delete = function(m_id) {
+	    socket.emit('chat:delete', { m_id: m_id}, function(d) {
+			if(d.c == "1") {
+	        	alert(d.m);
+	        } else {
+	        	alert(d.m);
+	        }
+	    });
+	}
+});
+
+admin.controller('tabControl', ['$scope', function ($scope) {
+
+
+    $scope.tabs = [{
+            title: 'Dashboard',
+            url: 'dashboard.tpl.html',
+            template: 'asd'
+        }, {
+            title: 'Users',
+            url: 'users.tpl.html'
+        }, {
+            title: 'Withdrawals',
+            url: 'withdraws.tpl.html'
+        }, {
+            title: 'Deposits',
+            url: 'deposits.tpl.html'
+        }, {
+            title: 'Chat',
+            url: 'chat.tpl.html'
+        }];
+
+    $scope.currentTab = 'dashboard.tpl.html';
+
+    $scope.onClickTab = function (tab) {
+        $scope.currentTab = tab.url;
+    }
+    
+    $scope.isActiveTab = function(tabUrl) {
+        return tabUrl == $scope.currentTab;
+    }
+}]);
+
+admin.factory('socket', function ($rootScope) {
+  var socket = io.connect();
+  return {
+    on: function (eventName, callback) {
+      socket.on(eventName, function () {  
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+});
+
+admin.filter('len', function () {
+	return function (item, l) {
+		if(!l) {
+			l = 6;
+		}
+		number = parseFloat(item).toFixed(l).toString();
+		if (number.match(/\./)) {
+		 number = number.replace(/\.?0+$/, '');
+		}
+		return number;
+	};
+});
+admin.filter('timeAgo', function() {
+        return function(item) {
+		    var seconds = Math.floor((new Date() - item) / 1000);
+
+		    var interval = Math.floor(seconds / 31536000);
+
+		    if (interval > 1) {
+		        return interval + " years";
+		    }
+		    interval = Math.floor(seconds / 2592000);
+		    if (interval > 1) {
+		        return interval + " months";
+		    }
+		    interval = Math.floor(seconds / 86400);
+		    if (interval > 1) {
+		        return interval + " days";
+		    }
+		    interval = Math.floor(seconds / 3600);
+		    if (interval > 1) {
+		        return interval + " hours";
+		    }
+		    interval = Math.floor(seconds / 60);
+		    if (interval > 1) {
+		        return interval + " mins";
+		    }
+		    return Math.floor(seconds) + " secs";
+        }
+    });
+admin.filter('range', function() {
+  return function(input, total) {
+    total = parseInt(total);
+    for (var i=0; i<total; i++)
+      input.push(i);
+    return input;
+  };
+});
+</script>
+
+</body>
+</html>

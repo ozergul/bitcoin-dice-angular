@@ -1,0 +1,94 @@
+<html lang="en-EN" ng-app="dice">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="description" content="The biggest satoshi faucet! Free satoshies per 10 minutes. Up to 0.000144 Bitcoin in one day!">
+	<meta name="keywords" content="btc,free,faucet,bitcon,satoshi,mine,get bitcoin">
+	<meta name="author" content="Satoshi Rain - Bitcoin">
+	<title><%= baslik %></title>
+
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/reset.css">
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/main.css">
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/font-awesome.min.css">
+	
+	<script src="<%= site_adres %>js/jquery.js" type="text/javascript"></script>
+	<script src="<%= site_adres %>js/angular.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	$(function(){
+		var AJAX_URL  = "<%= site_adres %>ajax/";
+
+	});
+	</script>
+</head>
+<body  ng-controller="loginController">
+<div class="index-page">
+<div class="login left rad">
+	<h2>login</h2>
+	<div><input class="s rad" type="text" ng-model="user_name_model_login" placeholder="User name"/></div>
+	<div><input class="s rad" type="password" ng-model="user_password_model_login" placeholder="Password"/></div>
+	<div><button ng-click="login()">Login</button></div>
+</div>
+
+<div class="register right rad">
+	<h2>register</h2>
+	<div><input class="s rad" type="text" ng-model="user_name_model_register" placeholder="User name"/></div>
+	<div><input class="s rad" type="password" ng-model="user_password_model_register" placeholder="Password"/></div>
+	<div><button ng-click="register()">Register</button></div>
+</div>
+</div>
+
+<script src="<%= site_adres %>socket.io/socket.io.js"></script>
+<script type="text/javascript">
+var dice = angular.module('dice', [])
+dice.controller('loginController', ['$scope','$http', 'socket', function($scope, $http, socket) {
+	$scope.login = function() {
+	    socket.emit('user:login', { user_name: $scope.user_name_model_login, user_password: $scope.user_password_model_login }, function(d) {
+			console.log(d);
+			if(d.c == "1") {
+	        	alert(d.m);
+	        	window.location.href = "/play"
+	        } else {
+	        	alert(d.m);
+	        }
+	    });
+	}
+
+	$scope.register = function() {
+	    socket.emit('user:register', { user_name: $scope.user_name_model_register, user_password: $scope.user_password_model_register }, function(d) {
+			console.log(d);
+			if(d.c == "1") {
+	        	alert(d.m);
+	        	window.location.href = "/play"
+	        } else {
+	        	alert(d.m);
+	        }
+	    });
+	}
+
+}]);
+dice.factory('socket', function ($rootScope) {
+  var socket = io.connect();
+  return {
+    on: function (eventName, callback) {
+      socket.on(eventName, function () {  
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+});
+</script>
+
+</body>
+</html>

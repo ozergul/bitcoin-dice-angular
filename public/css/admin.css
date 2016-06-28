@@ -1,0 +1,19 @@
+body {background: #efefef;}
+
+.left {float: left;}
+.right {float: right;}
+.db {display: block;}
+.c {overflow: hidden;}
+.cb {clear: both; display: block;}
+.rad {-webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px;}
+
+.admin-page {width: 95%; margin: auto; padding: 10px; background: #fff; margin-top: 10px; margin-bottom: 10px;}
+.admin-page > .menu {width: 20%}
+.admin-page > .content {width: 78%;}
+
+.statics {}
+.statics .blocks {}
+.statics .block { overflow: hidden; margin-bottom: 10px; padding: 10px; border: 1px solid #efefef;}
+.statics .block .in {padding-right: 10px;}
+.statics .block .key {}
+.statics .block .value {margin-top: 10px;}

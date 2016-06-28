@@ -1,0 +1,80 @@
+create table users (
+	user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	user_date text,
+	user_name text,
+	user_password text,
+
+	user_balance text,
+	user_bet_count text,
+	user_win_count text,
+	user_profit text,
+	user_wagered text,
+
+	user_level text,
+	user_hash text,
+	user_last_hash text,
+	user_btc_address text
+);
+
+
+create table bets (
+	bet_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	bet_user_id text,
+	bet_date text,
+	bet_ip text,
+	bet_amount text,
+	bet_payout text,
+	bet_chance text,
+	bet_profit text,
+	bet_roll text,
+	bet_type text,
+	bet_result text
+);
+
+
+create table invests (
+	invest_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	invest_user_id text,
+	invest_date text,
+	invest_amount text,
+	invest_profit text,
+	divest text
+);
+
+create table metas (
+	meta_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	meta_key text,
+	meta_value text
+);
+
+create table withdraws (
+	wd_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	wd_date text,
+	wd_user_id text,
+	wd_amount text,
+	wd_btc_address text,
+	wd_confirm text,
+	wd_tx_id text
+);
+
+create table deposits (
+	dp_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	dp_date text,
+	dp_amount text,
+	dp_btc_address text,
+	dp_confirmations text,
+	dp_tx_id text
+);
+
+create table chat (
+	m_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	m_user_id text,
+	m_date text,
+	m_text text
+);
+
+INSERT INTO `metas` (`meta_id`, `meta_key`, `meta_value`) VALUES (NULL, 'all_bets', '0'), (NULL, 'all_wagered', '0'), (NULL, 'all_wins', '0'), (NULL, 'all_loses', '0'), (NULL, 'all_profit', '0');
+
+
+
+

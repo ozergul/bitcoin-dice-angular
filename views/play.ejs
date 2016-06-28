@@ -1,0 +1,884 @@
+<html lang="en-EN" ng-app="dice">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="description" content="The biggest satoshi faucet! Free satoshies per 10 minutes. Up to 0.000144 Bitcoin in one day!">
+	<meta name="keywords" content="btc,free,faucet,bitcon,satoshi,mine,get bitcoin">
+	<meta name="author" content="Satoshi Rain - Bitcoin">
+	<title><%= baslik %></title>
+
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/reset.css">
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/main.css">
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/font-awesome.min.css">
+
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/ngDialog.css">
+	<link rel="stylesheet" type="text/css" href="<%= site_adres %>css/ngDialog-theme-default.css">
+
+	<script src="<%= site_adres %>js/jquery.js" type="text/javascript"></script>
+	<script src="<%= site_adres %>js/angular.min.js" type="text/javascript"></script>
+
+	<script src="<%= site_adres %>js/ngDialog.js" type="text/javascript"></script>
+	
+
+	<script type="text/javascript">
+	$(function(){
+	});
+	</script>
+</head>
+<body ng-controller="diceController" ng-init="init()">
+<div class="load">
+<div id="chat">
+	<div class="chat-toggle" ng-model="chat_toggle" ng-init="chat_open = false" ng-click="showHideChat()">
+		
+		<span ng-show="chat_open == false">Open chat <span class="unread-count">{{(messages|filter:filter_unread_messages).length}}</span></span>
+		<span ng-show="chat_open == true">x</span>
+	</div>
+	<div class="chat-toggle-div">
+		<div ng-show="chat_open">
+			<div class="c-messages" id="c-messages">
+				<div id="c-messages-container" style="height: auto">
+					<div class="message level{{m.user_level}}" ng-repeat="m in messages">
+						<div class="top c">
+							<span class="user">{{m.user_name}}</span>
+							<span class="date right">{{m.m_date | timeAgo}}</span>
+						</div>
+						<div class="content">{{m.m_text}}</div>
+					</div>
+				</div>
+			</div>
+			<div class="send">
+				<form ng-submit="sendMessage(message_text)" >
+					<input type="text" class="mini" ng-model="message_text" placeholder="Type and  enter" />
+				</form>
+			</div>
+		</div>
+		<div ng-hide="chat_open">
+			
+		</div>
+	</div>
+</div>
+
+<script type="text/ng-template" id="deposit">
+<div class="deposit-modal modal" ng-controller="depositController">
+	Your deposit address:
+	<div class="deposit-address">{{user_btc_address}}</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="withdraw">
+	<div class="withdraw-modal modal" ng-controller="withdrawController">
+		<div class="modal-title">Withdraw</div>
+		<div>
+			Your withdrawal will have 0.0001 subtracted to cover the transaction fee.
+		</div>
+		<div>
+			<span class="db">Bitcoin address</span>
+			<input 
+				type="text"
+				style="width: 100%;"
+				ng-model="withdraw_bitcoin_address_model"
+			/>
+		</div>
+		<div>
+			<span class="db">Amount</span>
+			<input 
+				type="text"
+				ng-model="withdraw_amount_model"
+			/>
+		</div>
+		<button class="rad success" ng-click="withdraw(withdraw_bitcoin_address_model, withdraw_amount_model)" ng-disabled="!withdraw_bitcoin_address_model || !withdraw_amount_model">Withdraw Request</button>
+	</div>
+</script>
+
+<div class="header">
+	<div class="container c">
+		<div class="left logo">
+			<a href="<%= site_adres %>">logo</a>
+		</div>
+		<div class="right stats c">
+		<span class="db block left"><span class="key">all bet</span> <span class="value">{{site_all_bets | len}}</span></span>
+		<span class="db block left"><span class="key">profit</span>  <span class="value">{{site_all_profit | len}} <i class="fa fa-bitcoin"></i></span></span>
+		<span class="db block left"><span class="key">wagered</span> <span class="value">{{site_all_wagered | len}} <i class="fa fa-bitcoin"></i></span></span>
+		<span class="db block left"><span class="key">total invest</span> <span class="value">{{site_total_invest_amount | len}} <i class="fa fa-bitcoin"></i></span></span>
+		<span class="db block left"><span class="key">total inv. profit</span> <span class="value">{{site_total_invest_profit | len}} <i class="fa fa-bitcoin"></i></span></span>
+		<span class="db block left balance"><span class="key">my balance</span> <span class="value">{{balance | len}} <i class="fa fa-bitcoin"></i></span></span>
+		</div>
+	</div>
+</div>
+<div class="container">
+
+	<div class="stats section">
+		<div class="my-stats in rad">
+			<div class="line user">
+				<div class="user-name">
+					<span class="name">
+						{{user_name}}
+					</span>
+				</div>
+			</div>
+			<div class="line">
+				<span class="property">My bets</span>
+				<span class="value">{{my_total}}</span>
+			</div>
+			<div class="line">
+				<span class="property">My wins</span>
+				<span class="value" style="color:#25ba63">{{my_wins}}</span>
+			</div>
+			<div class="line">
+				<span class="property">My loses</span>
+				<span class="value" style="color:#FF6257">{{my_loses}}</span>
+			</div>
+			<div class="line">
+				<span class="property">My wagered</span>
+				<span class="value">{{my_wagered | len:8}} <i class="fa fa-bitcoin"></i></span>
+			</div>
+			<div class="line">
+				<span class="property">My profit</span>
+				<span class="value">{{my_profit | len:8}} <i class="fa fa-bitcoin"></i></span>
+			</div>
+
+			<hr/>
+			<div class="line">
+				<span class="property">My Invested</span>
+				<span class="value">{{my_total_invest_amount | len:8}} <i class="fa fa-bitcoin"></i></span>
+			</div>
+			<div class="line">
+				<span class="property">My Inv. Profit</span>
+				<span class="value" style="color:#25ba63">{{my_total_invest_profit | len:8}} <i class="fa fa-bitcoin"></i></span>
+			</div>
+			<div class="line" style="margin: 0;">
+				<span class="property">Invest Percentage</span>
+				<span class="value">{{ (my_total_invest_amount / site_total_invest_amount) * 100 | len:8}} %</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="dice section">
+		<div class="in rda">
+			<div class="balance c">
+				<span class="btc">{{balance | len}} <i class="fa fa-bitcoin"></i></span>
+				<button class="deposit rad" ng-click="openModal('deposit');">Deposit</button>
+				<button class="deposit rad" ng-click="openModal('withdraw');">Withdraw</button>
+			</div>
+			<div class="game c">
+
+				<div class="row c">
+					<div class="left amount-area inputs">
+						<span class="title db">Amount</span>
+						<input 
+							type="text" 
+							class="bet-amount"
+							ng-model="bet_amount_model" 
+							ng-keyup="do();"
+						/>
+					</div>
+					<div class="right payout-area inputs">
+						<span class="title db">Payout</span>
+						<input 
+							type="text" 
+							class="payout" 
+							ng-model="payout_model" 
+							ng-keyup="do();" 
+						/>
+					</div>
+				</div>
+				<div class="row results c">
+					<span class="profit db left">
+						<div>Profit to win:</div> 
+						{{profit | len: 10}}
+					</span>
+					<span class="chance db right">
+						<div>Chance:</div> 
+						{{chance | len}} %
+					</span>	
+				</div>
+				<div class="row buttons c">
+					<button class="roll-under" ng-click="bet('under');" ng-disabled="button_disable == true">
+						<i class="fa fa-angle-down l"></i>
+						Roll under
+					</button>
+					<button class="roll-over" ng-click="bet('over');" ng-disabled="button_disable == true">
+						Roll over
+						<i class="fa fa-angle-up r"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="invest section">
+		<div class="in rad">
+			<div class="invest-form c">
+				<input 
+					type="text" 
+					class="invest-amount left" 
+					ng-model="invest_amount_model" 
+				/>
+				<button class="invest rad right" ng-click="invest();">invest</button>
+			</div>
+			<div class="my-invests" ng-show="my_invests.length">
+				<div class="invest-item c" ng-repeat="invest in my_invests">
+
+					<div class="left">
+						<div class="amount">
+							<span>Amount:</span> {{invest.invest_amount | len:8}} <i class="fa fa-bitcoin"></i>
+						</div>
+						<div class="profit">
+							<span>Profit:</span> {{invest.invest_profit | len:8}} <i class="fa fa-bitcoin"></i>
+						</div>
+					</div>
+					<div class="right">
+						<button class="divest danger mini rad" ng-click="divest(invest.invest_id)">Divest</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="do-invest" ng-hide="my_invests.length">
+				Do invest and win more and more
+			</div>
+		</div>
+	</div>
+
+
+
+
+<div class="cb"></div>
+
+<div class="tabs-home" ng-controller="tabControl">
+	<div class="tab-head">
+	    <ul class="c">
+	        <li ng-repeat="tab in tabs" 
+	            ng-class="{active:isActiveTab(tab.url)}" 
+	            ng-click="onClickTab(tab)">{{tab.title}}</li>
+	        <li class="logout"><a href="<%= site_adres %>logout">Logout</a></li>
+	    </ul>
+    </div>
+    <div class="tab-view">
+        <div class="tab-in" ng-include="currentTab"></div>
+    </div>
+</div>
+<script type="text/ng-template" id="allbets.tpl.html">
+	<table class="table bets">
+	  <tr class="head">
+	    <td>ID</td>
+	    <td>Date</td>
+	    <td>User</td>
+	    <td>Amount</td> 
+	    <td>Result</td>
+	    <td>Target</td>
+	    <td>Rolled</td>
+	    <td>Payout</td>
+	    <td>Profit</td>
+	  </tr>
+	  <tr ng-repeat="bet in all_bets" class="bet {{bet.bet_result}}">
+	    <td class="id">#{{bet.bet_id}}</td>
+	    <td class="date">{{bet.bet_date | timeAgo}}</td>
+	    <td class="user">{{bet.user_name}}</td>
+	    <td class="amount">{{bet.bet_amount | len}} <i class="fa fa-bitcoin"></i></td> 
+	    <td class="result">{{bet.bet_result}}</td>
+	    <td class="target">{{ (bet.bet_type == 'over') ? '>' : '<'}} {{bet.bet_chance | len}}</td>
+	    <td class="roll">{{bet.bet_roll}}</td>
+	    <td class="payout">{{bet.bet_payout}}</td>
+	    <td class="profit">{{bet.bet_profit | len:10}} <i class="fa fa-bitcoin"></i></td>
+	  </tr>
+	</table>
+</script>
+
+<script type="text/ng-template" id="mybets.tpl.html">
+	<table class="table bets">
+	  <tr class="head">
+	    <td>ID</td>
+	    <td>Date</td>
+	    <td>Amount</td> 
+	    <td>Result</td>
+	    <td>Target</td>
+	    <td>Rolled</td>
+	    <td>Payout</td>
+	    <td>Profit</td>
+	  </tr>
+	  <tr ng-repeat="bet in my_bets" class="bet {{bet.bet_result}}">
+	    <td class="id">#{{bet.bet_id}}</td>
+	    <td class="date">{{bet.bet_date | timeAgo}}</td>
+	    <td class="amount">{{bet.bet_amount | len}} <i class="fa fa-bitcoin"></i></td> 
+	    <td class="result">{{bet.bet_result}}</td>
+	    <td class="target">{{ (bet.bet_type == 'over') ? '>' : '<'}} {{bet.bet_chance | len}}</td>
+	    <td class="roll">{{bet.bet_roll}}</td>
+	    <td class="payout">{{bet.bet_payout}}</td>
+	    <td class="profit">{{bet.bet_profit | len:10}} <i class="fa fa-bitcoin"></i></td>
+	  </tr>
+	</table>
+</script>
+
+<script type="text/ng-template" id="myaccount.tpl.html">
+	<div class="settings">
+		<div class="line c">
+			<div class="left label">
+				Your ID
+			</div>
+			<div class="left c content">
+				#{{user_id}}
+			</div>
+		</div>
+		<div class="line c">
+			<div class="left label">
+				Change Username
+			</div>
+			<div class="left c content">
+				<div class="s c">
+					<span class="tag left">New username</span>
+					<input 
+						type="text"
+						class="new-user-name mini"
+						ng-model="new_user_name_model" 
+					>
+				</div>
+				<div class="s c">
+					<span class="tag left"> &nbsp; </span>
+					<button class="rad" ng-click="changeUserName(new_user_name_model)" ng-disabled="!new_user_name_model">Change</button>
+				</div>
+			</div>
+		</div>
+		<div class="line c">
+			<div class="left label">
+				Change Password
+			</div>
+			<div class="left c content">
+				<div class="s c">
+					<span class="tag left">Current password</span>
+					<input 
+						type="password"
+						class="mini"
+						ng-model="current_password_model"
+					/>
+				</div>
+				<div class="s c">
+					<span class="tag left">New password</span>
+					<input 
+						type="password"
+						class="mini"
+						ng-model="new_password_model"
+					/>
+				</div>
+				<div class="s c">
+					<span class="tag left">New password again</span>
+					<input 
+						type="password"
+						class="mini"
+						ng-model="new_password_again_model"
+					/>
+				</div>
+				<div class="s c" style="margin-bottom: 0px">
+					<span class="tag left"> &nbsp; </span>
+					<button class="rad" ng-click="changeUserPassword(current_password_model, new_password_model)" ng-disabled="new_password_model != new_password_again_model || !current_password_model || !new_password_model || !new_password_again_model">Change</button>
+				</div>
+			</div>
+		</div>
+		<div class="line c">
+			<div class="left label">
+				My last hash
+			</div>
+			<div class="left c content">
+				<span style="color: #777">{{user_last_hash}}</span>
+				<div class="cb"></div>
+				This is your last unique roll number.
+				<button class="btn btn-success" ng-click="randomize()">Randomize your bets</button>
+			</div>
+		</div>
+		<div class="line c">
+			<div class="left label">
+				Date Joined
+			</div>
+			<div class="left c content">
+				{{user_date | timeAgo}}
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/ng-template" id="withdraws.tpl.html">
+	<div class="withdraws">
+		<p>
+			Withdraws will be passed by admin.
+		</p>
+		<button class="rad" ng-click="openModal('withdraw');" style="margin: 10px 0">Withdraw</button>
+		<table class="table withdraws">
+		  <tr class="head">
+		    <td>Withdraw ID</td>
+		    <td>Date</td>
+		    <td>Amount</td> 
+		    <td>BTC Address</td>
+		    <td>Tx Id</td>
+		    <td>Confirm</td>
+		  </tr>
+		  <tr ng-repeat="withdraw in my_withdraws" class="withdraw wd{{withdraw.wd_confirm}}">
+		    <td class="id">#{{withdraw.wd_id}}</td>
+		    <td class="date">{{withdraw.wd_date | timeAgo}}</td>
+		    <td class="amount">{{withdraw.wd_amount | len}} <i class="fa fa-bitcoin"></i></td> 
+		    <td class="btc_address">{{withdraw.wd_btc_address}}</td>
+		    <td class="tx_id" ng-switch="withdraw.wd_confirm">
+		    	
+			    <span ng-switch-when="0">
+			    -
+			    </span>
+			    <span ng-switch-when="1">
+			   	<a target="_blank" href="https://blockchain.info/tx/{{withdraw.wd_tx_id}}">{{withdraw.wd_tx_id.substring(0, 20)}}...</a>
+			    </span>
+			    <span ng-switch-when="2">
+			    -
+			    </span>
+		    </td>
+		    <td class="roll" ng-switch="withdraw.wd_confirm">
+			    <span ng-switch-when="0">
+			    In processing
+			    </span>
+			    <span style="color: green" ng-switch-when="1">
+			    Approved
+			    </span>
+			    <span style="color: red" ng-switch-when="2">
+			    Declined
+			    </span>
+		    </td>
+		  </tr>
+		</table>
+	</div>
+</script>
+<script type="text/ng-template" id="deposits.tpl.html">
+<div class="deposits">
+	<p>
+	Your deposits will show here.
+	</p>
+
+	<button class="rad" ng-click="openModal('deposit');" style="margin: 10px 0">Deposit</button>
+
+	<table class="table deposits">
+	  <tr class="head">
+	    <td>ID</td>
+	    <td>Date</td>
+	    <td>Amount</td> 
+	    <td>Tx ID</td>
+	  </tr>
+	  <tr ng-repeat="dp in my_deposits">
+	    <td class="id">#{{dp.dp_id}}</td>
+	    <td class="date">{{dp.dp_date | timeAgo}}</td>
+	    <td class="amount">{{dp.dp_amount | len}} <i class="fa fa-bitcoin"></i></td> 
+	    <td class="txid"><a target="_blank" href="https://blockchain.info/tx/{{dp.dp_tx_id}}">{{dp.dp_tx_id}}</a></td>
+	  </tr>
+	</table>
+</div>
+</script>
+
+<div class="footer c">
+	<div class="left">Dice Script (2014)</div>
+	<div class="right">
+		<a href="#twitter"><i class="fa fa-twitter"></i> Twitter</a>
+		|
+		<a href="#facebook"><i class="fa fa-facebook"></i> Facebook</a>
+	</div>
+</div>
+</div>
+</div>
+
+<script src="<%= site_adres %>socket.io/socket.io.js"></script>
+<script type="text/javascript">
+var dice = angular.module('dice', ['ngDialog'])
+
+dice.controller('diceController', ['$scope','$http', 'socket', 'ngDialog', function($scope, $http, socket, ngDialog) {
+
+	$scope.openModal = function (modal, controller) {
+	    ngDialog.open({ template: modal});
+	};
+
+  	var DICE = {
+		max_amount: 255,
+		min_amount: 0.000000009,
+		max_payout: 999,
+		min_payout: 1.001
+  	};
+	setInterval(function() {
+		//angular.element('.roll-under').trigger('click');
+	}, 100)
+  	/* starting values */
+
+    $scope.bet_amount_model = 0.001;
+    $scope.payout_model = 1.001;
+    $scope.balance = '<%= user.user_balance %>';
+    $scope.user_id = '<%= user.user_id %>';
+    $scope.user_name = '<%= user.user_name %>';
+    $scope.user_date = '<%= user.user_date %>';
+    $scope.user_last_hash = '<%= user.user_last_hash %>';
+
+	$http.get('api/bets/my').success(function(data, status, headers, config) {
+        $scope.my_bets = data;
+	});
+	$http.get('api/bets/50').success(function(data, status, headers, config) {
+        $scope.all_bets = data;
+	});
+	$http.get('api/info/<%= user.user_id %>').success(function(data, status, headers, config) {
+    	
+    	$scope.my_total = data[0].user_bet_count;
+	    $scope.my_wins = data[0].user_win_count;
+	    $scope.my_loses = data[0].user_bet_count - data[0].user_win_count;
+	    $scope.my_wagered = data[0].user_wagered;
+		$scope.my_profit = data[0].user_profit;
+	});
+
+	$http.get('api/info').success(function(data, status, headers, config) {
+		$scope.site_all_bets = data.all_bets;
+		$scope.site_all_profit = data.all_profit;
+		$scope.site_all_wins = data.all_wins;
+		$scope.site_all_loses = data.all_loses;
+		$scope.site_all_wagered = data.all_wagered;
+		$scope.site_total_invest_amount = data.site_total_invest_amount;
+	    $scope.site_total_invest_profit = data.site_total_invest_profit;
+	});	
+
+	$http.get('api/invests/my').success(function(data, status, headers, config) {
+	    $scope.my_invests = data.my_invests;
+	    $scope.my_total_invest_amount = data.invest_stats.my_total_invest_amount;
+	    $scope.my_total_invest_profit = data.invest_stats.my_total_invest_profit;
+	});	
+	$http.get('api/withdraws/my').success(function(data, status, headers, config) {
+	    $scope.my_withdraws = data;
+	});	
+	$http.get('api/deposits/my').success(function(data, status, headers, config) {
+	    $scope.my_deposits = data;
+	});
+	$scope.messages;
+	$http.get('api/chat/page/1').success(function(data, status, headers, config) {
+	    $scope.messages = data.reverse();
+	});	   
+	$scope.invest = function() {
+		socket.emit('invest:do', { invest_amount: $scope.invest_amount_model }, function(d) {	
+	        if(d.c == 1) {
+	        	alert(d.m);
+	        } else {
+	        	alert(d.m);
+	        }
+		});
+	}
+	$scope.divest = function(invest_id) {
+		socket.emit('invest:divest', { invest_id: invest_id }, function(d) {
+	        if(d.c == "1") {
+	        	alert(d.m);
+	        } else {
+	        	alert(d.m);
+	        }
+		});
+	}
+    $scope.do = function() {
+	
+
+    	var bet_amount = Math.abs($scope.bet_amount_model),
+    		payout = Math.abs($scope.payout_model),
+    		chance, profit;
+
+    	if(bet_amount < DICE.min_amount || bet_amount > DICE.max_amount) {
+
+    		console.log("bet_amount_error");
+
+    		$scope.bet_amount_error = "bet amount xx ile xxx arasında olmalı";
+    		$scope.payout_error = false;
+    		$scope.button_disable = true;
+
+    	} else if(payout < DICE.min_payout || payout > DICE.max_payout) {
+
+    		console.log("payout_error");
+
+    		$scope.payout_error = "payout x ile xxx arasında olmalı";
+    		$scope.bet_amount_error = false;
+    		$scope.button_disable = true;
+    	} else {
+    		$scope.bet_amount_error = false;
+    		$scope.payout_error = false;
+    		$scope.button_disable = false;
+
+			chance = (1 / (payout / 100) * ((100 - 1) / 100));
+			profit = ( ( bet_amount * payout ) - bet_amount);
+
+	    	$scope.chance = chance;
+	    	$scope.profit = profit;
+    	}
+
+    }
+    /*
+    $scope.isNumber = function(v) {
+		var RE = /^-{0,1}\d*\.{0,1}\d+$/;
+    	return (RE.test(v));
+	}
+	*/
+	$scope.bet = function (type) {
+		var data = {
+			bet_amount: $scope.bet_amount_model,
+			payout: $scope.payout_model,
+			chance: $scope.chance,
+			profit: $scope.profit,
+			type: type
+		}
+	    socket.emit('bet:do', data, function(d) {
+	    	console.log(d);
+	    	if(d.c == 0) {
+	    		alert(d.m);
+	    	}
+	    });
+	};	
+
+	$scope.addBetToTable = function (where, bet) {
+		if(where == "my") {
+			$scope.my_bets.unshift(bet)
+			if($scope.my_bets.length > 50) {
+				$scope.my_bets.splice(-1,1)
+			}
+			
+		} else if(where == "all") {
+			$scope.all_bets.unshift(bet)
+			if($scope.all_bets.length > 50) {
+				$scope.all_bets.splice(-1,1)
+			}
+		}
+	};
+
+	$scope.updateSite = function () {
+		socket.on('update:site:bet', function (data) {
+			/* all bet table */
+			$scope.addBetToTable("all", data);
+		})
+		socket.on('update:site:info', function (data) {
+			/* site bet stats*/
+			$scope.site_all_bets = data.all_bets;
+			$scope.site_all_profit = data.all_profit;
+			$scope.site_all_wins = data.all_wins;
+			$scope.site_all_loses = data.all_loses;
+			$scope.site_all_wagered = data.all_wagered;
+			$scope.site_total_invest_amount = data.site_total_invest_amount;
+	    	$scope.site_total_invest_profit = data.site_total_invest_profit;
+		})
+	};
+	$scope.updateMy = function () {
+		socket.on('update:my:bet', function (data) {
+
+			//console.log(data);
+			$scope.addBetToTable("my", data);
+
+			$scope.my_wagered = parseFloat($scope.my_wagered) + parseFloat(data.bet_amount);
+			if(data.bet_result == 'win') {
+				$scope.balance = parseFloat($scope.balance) + parseFloat(data.bet_profit);
+				$scope.my_profit = parseFloat($scope.my_profit) + parseFloat(data.bet_profit);
+				$scope.my_wins = parseFloat($scope.my_wins) + 1;
+			} else if(data.bet_result == 'lose') {
+				$scope.balance = parseFloat($scope.balance) - parseFloat(data.bet_amount);
+				$scope.my_loses = parseFloat($scope.my_loses) + 1;
+			}
+			$scope.my_total = parseFloat($scope.my_total) + 1;
+		})
+		socket.on('update:my:invests', function (data) {
+	    	$scope.my_invests = data.my_invests;
+	    	$scope.my_total_invest_amount = data.invest_stats.my_total_invest_amount;
+	    	$scope.my_total_invest_profit = data.invest_stats.my_total_invest_profit;
+		})	
+	};
+	$scope.updateSite();
+	$scope.updateMy();
+
+	$scope.changeUserName = function (new_user_name) {
+
+	    socket.emit('change:username', { new_user_name: new_user_name }, function(d) {
+			console.log(d);
+			if(d.c == "1") {
+	        	$scope.user_name = new_user_name;
+	        	alert(d.m);
+	        } else {
+	        	alert(d.m);
+	        }
+	    });
+	};
+
+
+	$scope.changeUserPassword = function (current_password, new_password) {
+	    socket.emit('change:password', { current_password: current_password, new_password: new_password }, function(d) {
+			if(d.c == "1") {
+	        	alert(d.m);
+	        } else {
+	        	alert(d.m);
+	        }
+	    });
+	};
+
+	$scope.init = function () {
+	    $scope.do();
+	};
+
+	$scope.randomize = function () {
+		socket.emit('bet:randomize', {}, function(d) {
+
+			if(d.c == "1") {
+	        	$scope.user_last_hash = d.hash;
+	        	alert(d.m);
+	        } else {
+	        	alert(d.m);
+	        }
+		});
+	};
+
+	// sadece document ready de çalıştır
+	var h = $("#c-messages-container")[0].scrollHeight;
+	$("#c-messages").animate( {scrollTop: h });
+
+	// send chat message
+	$scope.sendMessage = function (message_text) {
+		socket.emit('chat:send', {message_text:message_text}, function(d) {
+			if(d.c == "1") {
+	        	$scope.messages.push(d.message);
+	        	$scope.message_text = "";
+				var h = $("#c-messages-container")[0].scrollHeight;
+				$("#c-messages").animate( {scrollTop: h });
+	        } else {
+	        	alert(d.m);
+	        }
+		});
+	};	
+	// get chat messages
+	$scope.updateChat = function () {
+		socket.on('chat:get', function (data) {
+			$scope.messages.push(data);
+			var h = $("#c-messages-container")[0].scrollHeight;
+			$("#c-messages").animate( {scrollTop: h });
+		})
+	};	
+	$scope.updateChat();
+
+	// show and hide chat
+	$scope.showHideChat = function() {
+		$scope.chat_open = !$scope.chat_open;
+		if($scope.chat_open == false) {
+			delete localStorage.closeDate;
+			localStorage.setItem("closeDate", new Date().getTime());
+		}
+	}
+
+	// filter unread
+	$scope.filter_unread_messages = function(message) {
+		return (parseInt(message.m_date) >= localStorage.getItem("closeDate") && message.m_user_id != '<%= user.user_id %>')
+	};
+
+  }]);
+
+dice.controller('withdrawController', function ($scope, $rootScope, socket) {
+	$scope.withdraw = function (bitcoin_address, amount) {
+	    socket.emit('withdraw', { bitcoin_address: bitcoin_address, amount: amount }, function(d) {
+			console.log(d);
+			if(d.c == "1") {
+	        	alert(d.m);
+	        	document.location.reload();
+	        } else {
+	        	alert(d.m);
+	        }
+	    });
+	};
+});
+
+dice.controller('depositController', function ($scope, $rootScope) {
+    $scope.user_btc_address = '<%= user.user_btc_address %>';
+});
+dice.factory('socket', function ($rootScope) {
+  var socket = io.connect();
+  return {
+    on: function (eventName, callback) {
+      socket.on(eventName, function () {  
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+});
+
+dice.filter('len', function () {
+	return function (item, l) {
+		if(!l) {
+			l = 6;
+		}
+		number = parseFloat(item).toFixed(l).toString();
+		if (number.match(/\./)) {
+		 number = number.replace(/\.?0+$/, '');
+		}
+		return number;
+	};
+});
+dice.filter('timeAgo', function() {
+        return function(item) {
+		    var seconds = Math.floor((new Date() - item) / 1000);
+
+		    var interval = Math.floor(seconds / 31536000);
+
+		    if (interval > 1) {
+		        return interval + " years";
+		    }
+		    interval = Math.floor(seconds / 2592000);
+		    if (interval > 1) {
+		        return interval + " months";
+		    }
+		    interval = Math.floor(seconds / 86400);
+		    if (interval > 1) {
+		        return interval + " days";
+		    }
+		    interval = Math.floor(seconds / 3600);
+		    if (interval > 1) {
+		        return interval + " hours";
+		    }
+		    interval = Math.floor(seconds / 60);
+		    if (interval > 1) {
+		        return interval + " mins";
+		    }
+		    return Math.floor(seconds) + " secs";
+        }
+    });
+
+function Ctrl($scope) {
+    $scope.timestamp = '2012-09-06 22:21:15';
+    $scope.loadtime = (new Date()).getTime();
+    $scope.fiddletime = '2012-09-06 22:21:15';
+}
+
+
+dice.controller('tabControl', ['$scope', function ($scope) {
+    $scope.tabs = [{
+            title: 'All Bets',
+            url: 'allbets.tpl.html'
+        }, {
+            title: 'My Bets',
+            url: 'mybets.tpl.html'
+        }, {
+            title: 'Account',
+            url: 'myaccount.tpl.html'
+        }, {
+            title: 'Withdrawals',
+            url: 'withdraws.tpl.html'
+        }, {
+            title: 'Deposits',
+            url: 'deposits.tpl.html'
+        }];
+
+    $scope.currentTab = 'allbets.tpl.html';
+
+    $scope.onClickTab = function (tab) {
+        $scope.currentTab = tab.url;
+    }
+    
+    $scope.isActiveTab = function(tabUrl) {
+        return tabUrl == $scope.currentTab;
+    }
+}]);
+</script>
+
+</body>
+</html>

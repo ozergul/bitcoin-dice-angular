@@ -1,0 +1,16 @@
+{
+  "name": "chat",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "bitcoin": "^2.2.0",
+    "cookie-parser": "~1.0.1",
+    "express": "*",
+    "express-session": "~1.0.2",
+    "socket.io": "0.9.15",
+    "cron": "~1.0.5"
+  }
+}
